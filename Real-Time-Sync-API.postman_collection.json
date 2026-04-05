@@ -1,0 +1,184 @@
+{
+  "info": {
+    "_postman_id": "real-time-sync-api",
+    "name": "Real-Time Sync API",
+    "description": "Kanban Board API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Create a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    console.log('Token saved to environment');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@example.com\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login and get JWT token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Boards",
+      "item": [
+        {
+          "name": "Create Board",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set(\"boardId\", jsonData._id);",
+                  "    console.log('Board ID saved to environment');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My First Kanban Board\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/boards",
+              "host": ["{{baseUrl}}"],
+              "path": ["boards"]
+            },
+            "description": "Create a new Kanban board"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Board",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/boards/{{boardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["boards", "{{boardId}}"]
+            },
+            "description": "Fetch board details"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Board",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Board Title\",\n  \"columns\": [\n    {\n      \"title\": \"To Do\",\n      \"tasks\": [\n        {\n          \"title\": \"Design Database\",\n          \"description\": \"Create MongoDB schemas\"\n        },\n        {\n          \"title\": \"Build API\",\n          \"description\": \"Create REST endpoints\"\n        }\n      ]\n    },\n    {\n      \"title\": \"In Progress\",\n      \"tasks\": [\n        {\n          \"title\": \"Implement Auth\",\n          \"description\": \"Add JWT authentication\"\n        }\n      ]\n    },\n    {\n      \"title\": \"Done\",\n      \"tasks\": [\n        {\n          \"title\": \"Setup Project\",\n          \"description\": \"Initialize Node.js project\"\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/boards/{{boardId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["boards", "{{boardId}}"]
+            },
+            "description": "Update board with columns and tasks"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "boardId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
